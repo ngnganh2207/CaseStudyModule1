@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flappy Bird</title>
+</head>
+<body>
+<canvas id="gamezone" width="900" height="500" style="border: 1px solid #000000"></canvas>
+<p id="score">Score: 0</p>
+<script>
+
+    var canVas = document.getElementById('gamezone');
+    var conText = canVas.getContext('2d');
+    var scoreShow = document.getElementById('score');
+    //load cac hinh anh
+    var birdImg = new Image();
+    var hinhnenchinh = new Image();
+    var ongtren = new Image();
+    var ongduoi = new Image();
+    birdImg.src = "bird.png";
+    hinhnenchinh.src = "background.png";
+    ongtren.src = "tobeOn.png";
+    ongduoi.src = "tobeBelow.png";
+    //tao cac bien
+    var score = 0;
+    var khoangcach2ong = 140;
+    var khoangcachdenongduoi;//khoang cach tu dau ong tren den vi tri dau ong duoi
+    //tao ra 1 object chim voi toa do x y la 1 nua canvas
+    var bird = {
+        x: hinhnenchinh.width / 5,
+        y: hinhnenchinh.height / 2,
+    }
+    var ong = [{
+        x: canVas.width,
+        y: 0, //khởi tạo ống đầu tiên nằm bên phải ngoài cùng và y=0.
+    }]; // tạo mảng ống chứa các ống di chuyển
+
+    //Tạo function để run game.
+    function run() {
+        conText.drawImage(hinhnenchinh, 0, 0);
+        conText.drawImage(birdImg, bird.x, bird.y);
+        conText.drawImage(ongtren, ong[0].x, ong[0].y);
+        console.log(ong[0]);
+        //Chạy ống
+        for (var i = 0; i < ong.length; i++) {
+            khoangcachdenongduoi = ongtren.height + khoangcach2ong;
+            conText.drawImage(ongtren, ong[i].x, ong[i].y);
+            //vẽ ống tren theo tọa độ ống đó. Ống dưới phụ thuôc ống trên
+            conText.drawImage(ongduoi, ong[i].x, ong[i].y + khoangcachdenongduoi);
+            //lấy vị trí ống trên + khoảng cách đến ống dưới vì tí nữa random lên
+            ong[i].x -= 3;// để ống di chuyển
+            if (ong[i].x == canVas.width / 2) {
+                ong.push({
+                    x: canVas.width,
+                    y: Math.floor(Math.random() * ongtren.height) - ongtren.height
+                })
+            }
+            if (ong[i].x == 0) ong.splice(0, 1);
+            //nếu ống đụng lề trái thì xóa đi để tránh mảng ống bị đầy làm chậm
+            if (ong[i].x == bird.x) score++;
+            if (bird.y + birdImg.height == canVas.height ||
+                bird.x + birdImg.width >= ong[i].x && bird.x <= ong[i].x + ongtren.width
+                && (bird.y <= ong[i].y + ongtren.height || bird.y + birdImg.height >= ong[i].y + khoangcachdenongduoi)
+            ) {
+                return;
+            }
+        }
+
+        //chạy ống
+        scoreShow.innerHTML = "score: " + score;
+
+        // cho bird rơi xuống.
+        bird.y += 3
+        requestAnimationFrame(run);
+    }
+
+    //thêm function cho bird bay lên khi click chuột
+    document.addEventListener("click", function () {
+        bird.y -= 60;
+    })
+    run();
+
+</script>
+</body>
+</html>
