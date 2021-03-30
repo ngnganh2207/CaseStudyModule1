@@ -8,7 +8,6 @@
 <canvas id="gamezone" width="900" height="500" style="border: 1px solid #000000"></canvas>
 <p id="score">Score: 0</p>
 <script>
-
     var canVas = document.getElementById('gamezone');
     var conText = canVas.getContext('2d');
     var scoreShow = document.getElementById('score');
@@ -17,6 +16,12 @@
     var hinhnenchinh = new Image();
     var ongtren = new Image();
     var ongduoi = new Image();
+    //âm thanh
+    var birdAu=new Audio();
+    birdAu.src="wing.wav";
+    var pointAu= new Audio();
+    pointAu.src="point.ogg";
+
     birdImg.src = "bird.png";
     hinhnenchinh.src = "background.png";
     ongtren.src = "tobeOn.png";
@@ -27,9 +32,13 @@
     var khoangcachdenongduoi;//khoang cach tu dau ong tren den vi tri dau ong duoi
     //tao ra 1 object chim voi toa do x y la 1 nua canvas
     var bird = {
-        x: hinhnenchinh.width / 5,
+        x: hinhnenchinh.width /5,
         y: hinhnenchinh.height / 2,
     }
+
+
+
+
     var ong = [{
         x: canVas.width,
         y: 0, //khởi tạo ống đầu tiên nằm bên phải ngoài cùng và y=0.
@@ -40,7 +49,7 @@
         conText.drawImage(hinhnenchinh, 0, 0);
         conText.drawImage(birdImg, bird.x, bird.y);
         conText.drawImage(ongtren, ong[0].x, ong[0].y);
-        console.log(ong[0]);
+        console.log(ong[0]);// kiểm tra tọa độ x y của ống
         //Chạy ống
         for (var i = 0; i < ong.length; i++) {
             khoangcachdenongduoi = ongtren.height + khoangcach2ong;
@@ -52,12 +61,18 @@
             if (ong[i].x == canVas.width / 2) {
                 ong.push({
                     x: canVas.width,
-                    y: Math.floor(Math.random() * ongtren.height) - ongtren.height
+                    y: Math.floor(Math.random() * ongtren.height) - ongtren.height//chưa hiểu
                 })
             }
-            if (ong[i].x == 0) ong.splice(0, 1);
+            if (ong[i].x == 0) {
+            ong.splice(0, 1);// chưa hiểu
+        }
             //nếu ống đụng lề trái thì xóa đi để tránh mảng ống bị đầy làm chậm
-            if (ong[i].x == bird.x) score++;
+            if (ong[i].x == bird.x){
+                score++;
+                pointAu.play();
+            }
+
             if (bird.y + birdImg.height == canVas.height ||
                 bird.x + birdImg.width >= ong[i].x && bird.x <= ong[i].x + ongtren.width
                 && (bird.y <= ong[i].y + ongtren.height || bird.y + birdImg.height >= ong[i].y + khoangcachdenongduoi)
@@ -76,6 +91,8 @@
 
     //thêm function cho bird bay lên khi click chuột
     document.addEventListener("click", function () {
+        birdAu.play();
+
         bird.y -= 60;
     })
     run();
